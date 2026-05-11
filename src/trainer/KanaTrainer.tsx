@@ -411,18 +411,18 @@ const KanaTrainer: React.FC = () => {
   return (
     <div className="trainer">
       <div className="config-toggle">
-        <button
+        {state.showReference || <button
           onClick={() => dispatch({ type: 'TOGGLE_CONFIG' })}
           className="toggle-button"
         >
           {state.showConfig ? '隐藏设置' : '显示设置'}
-        </button>
-        <button
+        </button>}
+        {state.showConfig || <button
           onClick={() => dispatch({ type: 'TOGGLE_REFERENCE' })}
           className="toggle-button"
         >
           {state.showReference ? '隐藏对照表' : '显示对照表'}
-        </button>
+        </button>}
       </div>
 
       {state.showReference && <KanaReferenceTable />}
