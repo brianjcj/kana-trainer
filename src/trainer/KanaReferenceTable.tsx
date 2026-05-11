@@ -59,7 +59,8 @@ export const KanaReferenceTable: React.FC = () => {
                                             onClick={() => playPronunciation(hiragana)}
                                             title={`点击播放 "${romaji}"`}
                                         >
-                                            {hiragana} / {katakana} - {romaji}
+                                            <span className="kana-char">{hiragana} {katakana}</span>
+                                            <span className="kana-roma">{romaji}</span>
                                         </td>
                                     ))}
                                 </tr>
@@ -80,7 +81,8 @@ export const KanaReferenceTable: React.FC = () => {
                                             onClick={() => playPronunciation(hiragana)}
                                             title={`点击播放 "${romaji}"`}
                                         >
-                                            {hiragana} / {katakana} - {romaji}
+                                            <span className="kana-char">{hiragana} {katakana}</span>
+                                            <span className="kana-roma">{romaji}</span>
                                         </td>
                                     ))}
                                 </tr>
@@ -101,7 +103,8 @@ export const KanaReferenceTable: React.FC = () => {
                                             onClick={() => playPronunciation(hiragana)}
                                             title={`点击播放 "${romaji}"`}
                                         >
-                                            {hiragana} / {katakana} - {romaji}
+                                            <span className="kana-char">{hiragana} {katakana}</span>
+                                            <span className="kana-roma">{romaji}</span>
                                         </td>
                                     ))}
                                 </tr>

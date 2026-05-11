@@ -3,6 +3,7 @@ import { shuffle } from './shuffle';
 import './KanaTrainer.css';
 import VirtualKeyboard from './VirtualKeyboard';
 import { KanaReferenceTable, playPronunciation } from './KanaReferenceTable';
+import { useTheme } from './useTheme';
 
 // 类型定义
 type KanaMapping = [string, string, string];
@@ -148,7 +149,7 @@ const reducer = (state: TrainingState, action: Action): TrainingState => {
     case 'ANSWER': {
       if (!state.currentQuestion) return state;
       const answer = action.payload.trim().toLowerCase();
-      if (!answer) return { ...state, feedback: '请输入答案！', feedbackType: 'error' };
+      if (!answer) return { ...state, feedback: '请输入答案!', feedbackType: 'error' };
 
       const qKey = state.currentQuestion.join(',');
 
@@ -176,7 +177,7 @@ const reducer = (state: TrainingState, action: Action): TrainingState => {
 
       const newState = {
         ...state,
-        feedback: (isCorrect ? '回答正确！' : `回答错误！正确答案是：`) + `${state.currentQuestion[0]} - ${state.currentQuestion[1]}`,
+        feedback: (isCorrect ? '回答正确!' : `回答错误!正确答案是:`) + `${state.currentQuestion[0]} - ${state.currentQuestion[1]}`,
         feedbackType: isCorrect ? 'success' as FeedbackType : 'error',
         input: '',
         correctCount: isCorrect ? state.correctCount + 1 : state.correctCount,
@@ -231,7 +232,7 @@ const reducer = (state: TrainingState, action: Action): TrainingState => {
     }
 
     case 'SET_INPUT':
-      return { ...state, feedback: '　', feedbackType: 'neutral', input: action.payload };
+      return { ...state, feedback: ' ', feedbackType: 'neutral', input: action.payload };
 
     case 'TOGGLE_CONFIG':
       return { ...state, showConfig: !state.showConfig, showReference: false };
@@ -277,7 +278,7 @@ const selectNextQuestion = (state: TrainingState): TrainingState => {
   }
 
   if (newCurrent.length === 0) {
-    return { ...state, feedback: '所有题目已完成！', feedbackType: 'success', currentQuestion: null };
+    return { ...state, feedback: '所有题目已完成!', feedbackType: 'success', currentQuestion: null };
   }
 
   if (state.askedCount % state.config.keepQuestionsSize === 0 /* && state.config.randomQuestions */) {
@@ -319,6 +320,7 @@ const handleSkip = (state: TrainingState): TrainingState => {
 
 // Main Component
 const KanaTrainer: React.FC = () => {
+  const { theme, toggleTheme } = useTheme();
   const [state, dispatch] = useReducer(reducer, {
     questions: [],
     currentQuestions: [],
@@ -330,7 +332,7 @@ const KanaTrainer: React.FC = () => {
     config: DEFAULT_CONFIG,
     correctCount: 0,
     totalAnswered: 0,
-    feedback: '　',
+    feedback: ' ',
     feedbackType: 'neutral' as FeedbackType,
     input: '',
     showConfig: false,
@@ -410,6 +412,34 @@ const KanaTrainer: React.FC = () => {
 
   return (
     <div className="trainer">
+      <header className="trainer-header">
+        <button
+          className="theme-toggle"
+          onClick={toggleTheme}
+          title={theme === 'dark' ? '切换亮色主题' : '切换暗色主题'}
+          aria-label="切换主题"
+        >
+          {theme === 'dark' ? (
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="12" r="5"/>
+              <line x1="12" y1="1" x2="12" y2="3"/>
+              <line x1="12" y1="21" x2="12" y2="23"/>
+              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+              <line x1="1" y1="12" x2="3" y2="12"/>
+              <line x1="21" y1="12" x2="23" y2="12"/>
+              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+            </svg>
+          ) : (
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+            </svg>
+          )}
+        </button>
+        <h1 className="trainer-title">五十音</h1>
+        <p className="trainer-subtitle">日语假名训练</p>
+      </header>
       <div className="config-toggle">
         {state.showReference || <button
           onClick={() => dispatch({ type: 'TOGGLE_CONFIG' })}
@@ -430,6 +460,7 @@ const KanaTrainer: React.FC = () => {
       {state.showConfig && (
         <div className="config-section">
           <h2>设置</h2>
+          <div className="config-grid">
           <label>
             包括清音：
             <input
@@ -439,7 +470,7 @@ const KanaTrainer: React.FC = () => {
             />
           </label>
           <label>
-            包括浊音：
+            包括浊音:
             <input
               type="checkbox"
               checked={state.config.useDakuon}
@@ -447,7 +478,7 @@ const KanaTrainer: React.FC = () => {
             />
           </label>
           <label>
-            包括拗音：
+            包括拗音:
             <input
               type="checkbox"
               checked={state.config.useYoon}
@@ -455,7 +486,7 @@ const KanaTrainer: React.FC = () => {
             />
           </label>
           <label>
-            打乱题目顺序：
+            打乱题目顺序:
             <input
               type="checkbox"
               checked={state.config.randomQuestions}
@@ -463,7 +494,7 @@ const KanaTrainer: React.FC = () => {
             />
           </label>
           <label>
-            首次提示答案：
+            首次提示答案:
             <input
               type="checkbox"
               checked={state.config.hintAnswerFirstTime}
@@ -471,7 +502,7 @@ const KanaTrainer: React.FC = () => {
             />
           </label>
           <label>
-            题目滑动窗口：
+            题目滑动窗口:
             <input
               type="number"
               value={state.config.keepQuestionsSize}
@@ -480,7 +511,7 @@ const KanaTrainer: React.FC = () => {
             />
           </label>
           <label>
-            问题提问次数：
+            问题提问次数:
             <input
               type="number"
               value={state.config.askCount}
@@ -489,7 +520,7 @@ const KanaTrainer: React.FC = () => {
             />
           </label>
           <label>
-            错误惩罚次数：
+            错误惩罚次数:
             <input
               type="number"
               value={state.config.askCountPenalty}
@@ -498,7 +529,7 @@ const KanaTrainer: React.FC = () => {
             />
           </label>
           <label>
-            最大重复次数：
+            最大重复次数:
             <input
               type="number"
               value={state.config.askCountMax}
@@ -507,6 +538,7 @@ const KanaTrainer: React.FC = () => {
             />
           </label>
 
+          </div>
           <div className="config-actions">
             <button
               type="button"
@@ -521,21 +553,44 @@ const KanaTrainer: React.FC = () => {
       )}
 
       <div className="progress">
-        <p>正确率：{((state.correctCount / state.totalAnswered) * 100 || 0).toFixed(1)}% ({state.correctCount} / {state.totalAnswered})   进度：{state.questionAsked.size} / {state.currentQuestions.length + state.questions.length}</p>
+        <div className="progress-stats">
+          <div className="stat-item">
+            <span className="stat-label">正确率</span>
+            <span className="stat-value">{((state.correctCount / state.totalAnswered) * 100 || 0).toFixed(1)}%</span>
+          </div>
+          <div className="stat-item">
+            <span className="stat-label">回答</span>
+            <span className="stat-value">{state.correctCount} / {state.totalAnswered}</span>
+          </div>
+          <div className="stat-item">
+            <span className="stat-label">进度</span>
+            <span className="stat-value">{state.questionAsked.size} / {state.currentQuestions.length + state.questions.length}</span>
+          </div>
+        </div>
+        <div className="progress-bar">
+          <div
+            className="progress-fill"
+            style={{
+              width: `${Math.min((state.questionAsked.size / Math.max(state.currentQuestions.length + state.questions.length, 1)) * 100, 100)}%`
+            }}
+          />
+        </div>
       </div>
 
 
       <div className="question-section">
         {state.currentQuestion && <div>
-          <p>
-            {state.askedCount}.
-            <span className='question-text'>{state.currentQuestion[0]}</span>{' '}
-            {state.config.hintAnswerFirstTime && state.questionfirstAsk && (
-              <span className="hint">({state.currentQuestion[1]})</span>
-            )}
-          </p>
+          <div className="question-display">
+            <div className="question-counter">第 {state.askedCount} 题</div>
+            <div>
+              <span className='question-text'>{state.currentQuestion[0]}</span>{' '}
+              {state.config.hintAnswerFirstTime && state.questionfirstAsk && (
+                <span className="hint">({state.currentQuestion[1]})</span>
+              )}
+            </div>
+          </div>
 
-          <form onSubmit={handleAnswer}>
+          <form onSubmit={handleAnswer} className="answer-form">
             <input
               type="text"
               value={state.input}
@@ -546,9 +601,11 @@ const KanaTrainer: React.FC = () => {
               className={isMobile() ? 'mobile-input' : ''}
             />
 
-            <p className={`feedback ${state.feedbackType}`}>
-              {state.feedback}
-            </p>
+            <div className="feedback-wrapper">
+              <p className={`feedback ${state.feedbackType}`}>
+                {state.feedback}
+              </p>
+            </div>
 
             {/* <div className="button-group"> */}
             {/* <button type="submit">提交</button> */}
@@ -560,9 +617,9 @@ const KanaTrainer: React.FC = () => {
           />
         </div>}
         <div className="button-group">
-          <button type="button" onClick={() => dispatch({ type: 'RESET' })}>重置</button>
-          <button type="button" onClick={() => dispatch({ type: 'SKIP' })}>跳过</button>
-          <button type="button" onClick={() => state.currentQuestion && playPronunciation(state.currentQuestion[0])}>朗读</button>
+          <button type="button" className="reset-btn" onClick={() => dispatch({ type: 'RESET' })}>重置</button>
+          <button type="button" className="skip-btn" onClick={() => dispatch({ type: 'SKIP' })}>跳过</button>
+          <button type="button" className="speak-btn" onClick={() => state.currentQuestion && playPronunciation(state.currentQuestion[0])}>朗读</button>
           <button type="submit" onClick={handleAnswer}>确定</button>
         </div>
       </div>
